@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Literature Organizer</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Local Literature Organizer</p>
+          <h1 id="app-title">Inbox Review</h1>
+        </div>
+        <div class="topbar-actions">
+          <label class="language-select">
+            <span id="language-label" class="sr-only">Language</span>
+            <select id="language-select">
+              <option value="zh-CN">简体中文</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button id="scan-btn" class="button primary" type="button">Scan</button>
+          <button id="apply-all-btn" class="button" type="button">Apply All</button>
+          <button id="rebuild-btn" class="button" type="button">Refresh Catalog</button>
+        </div>
+      </header>
+
+      <div id="status-banner" class="status-banner hidden"></div>
+
+      <nav class="tabs" aria-label="Main Views">
+        <button id="tab-inbox" class="tab active" data-tab="inbox" type="button">Inbox</button>
+        <button id="tab-history" class="tab" data-tab="history" type="button">History</button>
+        <button id="tab-catalog" class="tab" data-tab="catalog" type="button">Catalog</button>
+        <button id="tab-folders" class="tab" data-tab="folders" type="button">Folders</button>
+        <button id="tab-settings" class="tab" data-tab="settings" type="button">Settings</button>
+      </nav>
+
+      <main class="content">
+        <section class="panel-view active" data-panel="inbox">
+          <div class="workspace">
+            <aside class="pane list-pane">
+              <div class="pane-head">
+                <h2 id="inbox-heading">Pending Files</h2>
+                <span id="inbox-count" class="meta-badge">0</span>
+              </div>
+              <div id="inbox-list" class="inbox-list empty-state">No PDF files in the inbox.</div>
+            </aside>
+
+            <section class="pane detail-pane">
+              <div class="pane-head">
+                <h2 id="detail-heading">Recognition Result</h2>
+                <span id="detail-confidence" class="status-pill muted">Not selected</span>
+              </div>
+              <div id="detail-empty" class="empty-state">Select a file to see the title, author, year, reason, and excerpt.</div>
+              <div id="detail-card" class="detail-card hidden">
+                <div class="meta-grid">
+                  <div>
+                    <span id="label-title" class="label">Title</span>
+                    <p id="detail-title"></p>
+                  </div>
+                  <div>
+                    <span id="label-author" class="label">First Author</span>
+                    <p id="detail-author"></p>
+                  </div>
+                  <div>
+                    <span id="label-year" class="label">Year</span>
+                    <p id="detail-year"></p>
+                  </div>
+                  <div>
+                    <span id="label-reason" class="label">Reason</span>
+                    <p id="detail-reason"></p>
+                  </div>
+                </div>
+                <div class="snippet-block">
+                  <span id="label-excerpt" class="label">Excerpt</span>
+                  <p id="detail-excerpt"></p>
+                </div>
+              </div>
+            </section>
+
+            <aside class="pane action-pane">
+              <div class="pane-head">
+                <h2 id="action-heading">Archive Action</h2>
+              </div>
+              <div id="action-empty" class="empty-state">This panel shows the target category, suggested filename, and apply button.</div>
+              <form id="action-form" class="action-form hidden">
+                <label>
+                  <span id="label-category" class="label">Category</span>
+                  <select id="category-select"></select>
+                </label>
+                <label>
+                  <span id="label-filename" class="label">Suggested Filename</span>
+                  <input id="filename-input" type="text" />
+                </label>
+                <div class="path-preview">
+                  <span id="label-target" class="label">Target Path</span>
+                  <code id="target-preview"></code>
+                </div>
+                <div class="apply-row">
+                  <button id="apply-one-btn" type="submit" class="button primary">Apply</button>
+                </div>
+                <p id="action-hint" class="hint">The app suggests a category first, and you can still adjust it manually.</p>
+              </form>
+            </aside>
+          </div>
+        </section>
+
+        <section class="panel-view" data-panel="history">
+          <div class="sheet">
+            <div class="sheet-head">
+              <h2 id="history-heading">History</h2>
+              <div class="inline-actions">
+                <button id="history-refresh-btn" class="button" type="button">Refresh History</button>
+                <button id="history-clear-btn" class="button danger" type="button">Clear History</button>
+              </div>
+            </div>
+            <p id="history-subtle" class="subtle">The app records internal actions and detected manual moves or renames.</p>
+            <div id="history-list" class="history-list empty-state">No history yet.</div>
+          </div>
+        </section>
+
+        <section class="panel-view" data-panel="catalog">
+          <div class="sheet">
+            <div class="sheet-head">
+              <h2 id="catalog-heading">Catalog</h2>
+              <input id="catalog-search" type="search" placeholder="Search filename, path, or category" />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th id="column-filename">Filename</th>
+                    <th id="column-path">Relative Path</th>
+                    <th id="column-top">Top Level</th>
+                    <th id="column-sub">Subfolders</th>
+                  </tr>
+                </thead>
+                <tbody id="catalog-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-view" data-panel="folders">
+          <div class="sheet">
+            <div class="sheet-head">
+              <h2 id="folders-heading">Folder Mapping</h2>
+              <p id="folders-subtle" class="subtle">Managed folders are discovered via .organize_category markers, so you can still rename or move them manually.</p>
+            </div>
+            <div id="folder-grid" class="folder-grid"></div>
+          </div>
+        </section>
+
+        <section class="panel-view" data-panel="settings">
+          <div class="settings-grid">
+            <section class="info-card">
+              <h2 id="settings-heading">Workspace</h2>
+              <dl id="settings-root"></dl>
+            </section>
+            <section class="info-card">
+              <h2 id="advanced-heading">Advanced Recognition</h2>
+              <div id="gpt-status" class="gpt-status"></div>
+              <p id="advanced-subtle" class="subtle">This version prioritizes a stable local workflow first. You can extend it later with more advanced recognition.</p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
